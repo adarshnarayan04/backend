@@ -8,7 +8,7 @@ const port = 4000
 //always use / in path
 app.get('/', (req, res) => {
     //send the response
-  res.send('Hello World!')
+  res.send('Hello World!') // get displayed on browser
 })
 //res : response
 //req: request
@@ -22,7 +22,7 @@ app.get('/twitter', (req, res) => {
 
     //process.env.variable_name ( name should be same as declared in env file)
 app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}!`)
+  console.log(`Example app listening on port ${process.env.PORT}!`)//this value get displayed on terminal
 })
 //it will listen on port 3000
 

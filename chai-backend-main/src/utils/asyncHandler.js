@@ -2,7 +2,8 @@
 
 // a in db most of this is async function so have to use try catch block to handle the error
 
-//so we create the function  that will handle the asyc function and error ( so we dont have to handle it each time)
+//so we create the function  that will handle the asyc function and error ( so we dont have to handle it each time the error) 
+//like done in apierror
 const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
         Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))//catch will run promise is rejected
@@ -12,7 +13,30 @@ const asyncHandler = (requestHandler) => {
 
 export { asyncHandler }
 
-//calling the function inside the function(main function return the output of second function)
+
+//using async await
+// const asyncHandler = (requestHandler) => {
+//     return async (req, res, next) => {
+//         try {
+//             await requestHandler(req, res, next); //as reuestHandler is async function  so return an promise so we have to use await
+//         } catch (err) {
+//             next(err);
+//         }
+//     };
+// };
+
+// export { asyncHandler };
+
+//---------working of asyncHandler---------
+
+// Here's a breakdown of how it works:
+
+// asyncHandler takes a requestHandler function as an argument.
+// It returns a new function that takes req, res, and next as arguments.
+// Inside this new function, Promise.resolve(requestHandler(req, res, next)) is used to handle the requestHandler function, which might return a promise.
+// If the promise is rejected (i.e., an error occurs), the .catch((err) => next(err)) part ensures that the error is passed to the next function, which is the Express error-handling middleware.
+
+// //calling the function inside the function(main function return the output of second function)
 
 //func traversal(dfs) --> dfs function is passed as paramter 
 // {
