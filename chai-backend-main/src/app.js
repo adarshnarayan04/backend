@@ -19,7 +19,7 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" })); //url encoder
 app.use(express.static("public"));
 //pulbic folder is used to store images pdf,and files that are used
-app.use(cookieParser());
+app.use(cookieParser());//it is middleware to parse the cookie
 
 //routes import
 import userRouter from "./routes/user.routes.js"; //as it was default export so we can give any name

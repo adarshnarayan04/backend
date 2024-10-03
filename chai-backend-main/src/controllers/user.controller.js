@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { User } from "../models/user.model.js";//it can contact will database 
+import { User } from "../models/user.model.js"; //it can contact will database
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
@@ -9,10 +9,10 @@ import mongoose from "mongoose";
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
+    const accessToken = user.generateAccessToken(); //defined in user.model.js
     const refreshToken = user.generateRefreshToken();
 
-    user.refreshToken = refreshToken;
+    user.refreshToken = refreshToken; //stored the referesh token in database
     await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
@@ -47,11 +47,11 @@ const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
   //console.log("email: ", email); //can check the ouput  by passing the databy post command in postman (body -> raw -> json)
   //on localhost:8000/api/v1/users/register as register user function is called in this address by route(user.routes.js)
-// console.log(req.body)
-// console.log(req.files)
-// console.log( { fullName, email, username, password } )
+  // console.log(req.body)
+  // console.log(req.files)
+  // console.log( { fullName, email, username, password } )
 
-//wrong code as it will not work for undefined fields
+  //wrong code as it will not work for undefined fields
   // if (
   //   [fullName, email, username, password].some((field) => field?.trim() === "") //field? check if field is null or undefined if not then do  trim
   // ) {
@@ -65,18 +65,20 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //this will work for undefined fields
   if (
-    [fullName, email, username, password].some((field) => field==undefined||field?.trim() === "") //field? check if field is null or undefined if not then do  trim else return undefined
+    [fullName, email, username, password].some(
+      (field) => field == undefined || field?.trim() === ""
+    ) //field? check if field is null or undefined if not then do  trim else return undefined
   ) {
     console.log("All fields are required");
     throw new ApiError(400, "All fields are required");
   }
-//User.findOne() is used to find the user in database ( User is schema of user and it connected to database)
+  //User.findOne() is used to find the user in database ( User is schema of user and it connected to database)
   const existedUser = await User.findOne({
-    $or: [{ username }, { email }],//if mulitple pass it in array like done here
+    $or: [{ username }, { email }], //if mulitple pass it in array like done here
     //is anyone of the username or email is same then it will return the user(no need  both to same --> it case of and(both need to be same))
   });
   //by using $ we can use various operators
-  //$or: This is a MongoDB logical operator that performs a logical OR operation on an array of one or more expressions 
+  //$or: This is a MongoDB logical operator that performs a logical OR operation on an array of one or more expressions
   //and selects the documents that satisfy at least one of the expressions.
 
   if (existedUser) {
@@ -85,12 +87,11 @@ const registerUser = asyncHandler(async (req, res) => {
   //console.log(req.files);
 
   //in the routes we uploaded the image(in local storage) using upload(middleware) post it to controller (so we access it by req.files)
-  const avatarLocalPath = req.files?.avatar[0]?.path;//avatar is an array (as multer return an arary for all fiellds)
+  const avatarLocalPath = req.files?.avatar[0]?.path; //avatar is an array (as multer return an arary for all fiellds)
 
-  
   //const coverImageLocalPath = req.files?.coverImage[0]?.path; --> wrong code by sir
 
-  //by gpt(working) --> in above we access the coverImage[0] without checking coverImage exist or not 
+  //by gpt(working) --> in above we access the coverImage[0] without checking coverImage exist or not
   //in this we check coverImage is present then check if pos[0] is not null ( as option chaing (?.)) therefore
   // it is coverImage(?.)[0] not coverImage?[0] put . single time (not two time file(?.).coverImage--> one for option chainging and other for accessing)
   const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
@@ -110,18 +111,18 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);//uploaded the image on cloudinary
+  const avatar = await uploadOnCloudinary(avatarLocalPath); //uploaded the image on cloudinary
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  //created an user object using all the data obtained above(as database --> so take time so use await) 
+  //created an user object using all the data obtained above(as database --> so take time so use await)
   const user = await User.create({
     fullName,
     avatar: avatar.url,
-    coverImage: coverImage?.url || "",//to handle the error
+    coverImage: coverImage?.url || "", //to handle the error
     email,
     password,
     username: username.toLowerCase(),
@@ -129,15 +130,16 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //_id is added by mongodb automatically
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"//we wrrte what we do not want to selected (in string) (by default it select all the fields)
+    "-password -refreshToken" //we wrrte what we do not want to selected (in string) (by default it select all the fields)
   );
 
-  if (!createdUser) {//user not created
+  if (!createdUser) {
+    //user not created
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
   return res
-    .status(201)//this what is show in postman
+    .status(201) //this what is show in postman
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
 
@@ -165,13 +167,16 @@ const loginUser = asyncHandler(async (req, res) => {
   // }
 
   const user = await User.findOne({
+    //find the first entry in database
     $or: [{ username }, { email }],
   });
 
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
-
+  //as user is generated by mongoose so we can use the methods of userSchema(User)
+  //user.isPasswordCorrect(password) is a method of userSchema
+  //do not use User.isPasswordCorrect(password) as it is not a method of User ,method of User are findOne(),findById() etc
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
@@ -179,23 +184,27 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
-    user._id
+    user._id//generated by mongoose automatically
   );
 
+  //the data we send to frontend( so removed the password and refreshToken)
   const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken"//when dont need this field
   );
 
+  //when we send the cookie we have to set the options
   const options = {
+    //we can easily modify the cookie so have to set rules to protect it
     httpOnly: true,
     secure: true,
-  };
+  };//means it can not modified by frontend by enabling it
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
+    .cookie("accessToken", accessToken, options)//"key" ,value ,options
+    .cookie("refreshToken", refreshToken, options)//app.use(cookieParser()); so we can use cookie middleware
+    .json(//in json we send the ApiResponse constructor(statusCode, data, message = "Success") of ApiResponse.js
+      //so it reqiure these fields to generate the response
       new ApiResponse(
         200,
         {
@@ -208,18 +217,21 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {//to logout we dont send any data by postman
+  //middleware just uses the cookies data , and generate the data and  send it to logoutUser function
   await User.findByIdAndUpdate(
-    req.user._id,
+    req.user._id,// as we call the middleware verifyJWT so we have user object in req
     {
-      $unset: {
+      $unset: {//operator of mongodb
         refreshToken: 1, // this removes the field from document
       },
     },
     {
-      new: true,
+      new: true,//mean return the updated document not the original document
     }
   );
+  //, the new option in the findByIdAndUpdate method is a configuration option provided by Mongoose. When set to true,
+  // it ensures that the method returns the updated document rather than the original document before the update.
 
   const options = {
     httpOnly: true,
@@ -228,11 +240,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
+    .clearCookie("accessToken", options)//clearing the cookie 
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
+//in case our access token is expired then  we can use refresh token to get the new access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -262,6 +275,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
+    //generate the new access token and refresh token
+
     const { accessToken, newRefreshToken } =
       await generateAccessAndRefereshTokens(user._id);
 
@@ -284,7 +299,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
-  const user = await User.findById(req.user?._id);
+  const user = await User.findById(req.user?._id);//we get req.user object from middleware verifyJWT
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
   if (!isPasswordCorrect) {
@@ -292,7 +307,15 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   }
 
   user.password = newPassword;
-  await user.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false });//we called the save method so it will hash the password again
+  //as passowrd is modified this time so it will call the hash function(bcrypt)
+
+  //as we know user exsist so we can use save method directly  so can use validateBeforeSave: false as we validated it before
+
+  //Mongoose runs validation on a document before saving it.
+  // This ensures that the document adheres to the schema's validation rules.
+  //Setting validateBeforeSave to false tells Mongoose to skip the validation step and directly save the document to the database
+
 
   return res
     .status(200)
@@ -300,27 +323,28 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+  //used middleware , so it  return the user object  --> which we return here
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "User fetched successfully"));
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { fullName, email } = req.body;
+  const { fullName, email } = req.body;//which is send by postman/frontend
 
   if (!fullName || !email) {
     throw new ApiError(400, "All fields are required");
   }
 
   const user = await User.findByIdAndUpdate(
-    req.user?._id,
+    req.user?._id,//by this we findedt the user
     {
-      $set: {
-        fullName,
+      $set: {//set operator of mongodb is used to update the fields
+        fullName,//or fullName: fullName both are same
         email: email,
       },
     },
-    { new: true }
+    { new: true }//means do not return the original document return the updated document
   ).select("-password");
 
   return res
@@ -329,7 +353,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
-  const avatarLocalPath = req.file?.path;
+  const avatarLocalPath = req.file?.path;//by multer middleware we get the file in req.file
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is missing");
@@ -344,13 +368,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findByIdAndUpdate(
-    req.user?._id,
+    req.user?._id,//find the user by id
     {
-      $set: {
+      $set: {//update the avatar field usign set operator
         avatar: avatar.url,
       },
     },
-    { new: true }
+    { new: true }//return the updated document not the original document
   ).select("-password");
 
   return res
@@ -359,7 +383,8 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-  const coverImageLocalPath = req.file?.path;
+  const coverImageLocalPath = req.file?.path;//new image path given by multer middleware
+  //frontend send the image and we upload it to storage by multer middleware and get the path of the image
 
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover image file is missing");
