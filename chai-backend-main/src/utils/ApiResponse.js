@@ -1,4 +1,6 @@
 //write in same in another project
+
+//this data goes to fronted as it response
 class ApiResponse {
     constructor(statusCode, data, message = "Success"){
         this.statusCode = statusCode// store HTTP status code

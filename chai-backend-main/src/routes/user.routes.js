@@ -62,22 +62,25 @@ router.route("/login").post(loginUser);
 
 //secured routes( as we get here when user is logged in)
 
-router.route("/logout").post(verifyJWT, logoutUser);//verifyJWT is middleware as it run before logoutUser(can give many middleware)
-//we created the middleware as when we want to logout we dont have any information about the user 
+router.route("/logout").post(verifyJWT, logoutUser); //verifyJWT is middleware as it run before logoutUser(can give many middleware)
+//we created the middleware as when we want to logout we dont have any information about the user
 //so used middleware to get the information about the user
 
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/change-password").post(verifyJWT, changeCurrentPassword);
-router.route("/current-user").get(verifyJWT, getCurrentUser);//used get as we are getting the data from the server(see from the perspective of frontend)
+router.route("/change-password").post(verifyJWT, changeCurrentPassword); //verifyJWT  so that logined user can only change the password
+router.route("/current-user").get(verifyJWT, getCurrentUser); //used get as we are getting the data from the server(see from the perspective of frontend)
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
-
+//patch is used as we are updating the account details of the user as we are only updating the user's account details,
+//other fields in the user profile remain unchanged. Using PATCH indicates that only the account details are being modified, rather than the entire user profile.
+//post update the whole data but patch update the partial data
 router
   .route("/avatar")
-  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar); //two middleware
+//here want to upload an single image so used upload.single("avatar") middleware of multer
 router
   .route("/cover-image")
   .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
-//The PATCH method is used here because you are only updating the user's avatar, 
+//The PATCH method is used here because you are only updating the user's avatar,
 //which is a partial update to the user's profile
 // Using PATCH indicates that only the avatar field is being modified, rather than the entire user profile.
 

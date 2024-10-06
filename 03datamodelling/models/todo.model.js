@@ -12,6 +12,8 @@ const todoSchema = new mongoose.Schema( {
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,//it want to access the database variable (then type this) then give the ref
         ref: 'User',//same as name given to mode ('User',userSchema)--> User is the name
+
+        //as we in databse it stored as ObjectId 
     
     },
     subTodos: [

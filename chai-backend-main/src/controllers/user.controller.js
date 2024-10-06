@@ -138,6 +138,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
+  //this data goes to frontend/ postman as it response which we send
   return res
     .status(201) //this what is show in postman
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
@@ -419,19 +420,19 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   if (!username?.trim()) {
     throw new ApiError(400, "username is missing");
   }
-
+//applyig the aggregate function of mongodb on User schema(so it is local  here)
   const channel = await User.aggregate([
     {
       $match: {
         username: username?.toLowerCase(),
-      },
+      },//give me all details of the user which we store in db
     },
     {
       $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "channel",
-        as: "subscribers",
+        from: "subscriptions",//from Subscription model --> as mongodb change the name so it become subscriptions
+        localField: "_id",//in user schema(as local)
+        foreignField: "channel",//in subscription schema(as foreign)
+        as: "subscribers",//name given to it(get automatically added )
       },
     },
     {
@@ -443,7 +444,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
     {
-      $addFields: {
+      $addFields: {//adding the fields which we want to add
         subscribersCount: {
           $size: "$subscribers",
         },
@@ -451,8 +452,8 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
           $size: "$subscribedTo",
         },
         isSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+          $cond: {//used cond operator of mongodb
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },//check it is present or not (work with array and object)
             then: true,
             else: false,
           },
@@ -460,7 +461,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
     {
-      $project: {
+      $project: {//ONLY shoe thr variable name which we want to show
         fullName: 1,
         username: 1,
         subscribersCount: 1,
@@ -473,13 +474,16 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!channel?.length) {
+  if (!channel?.length) {//due to lookup it return array
     throw new ApiError(404, "channel does not exists");
   }
 
+//the value return goes to fronted as it is respond
   return res
     .status(200)
-    .json(
+    .json(//as the aggregrate function return array so we have to access the first element of the array
+      //it return an array as we can have mutliple entires return by aggregate function
+      //in this case only one entry is returned as username is unique
       new ApiResponse(200, channel[0], "User channel fetched successfully")
     );
 });
@@ -488,23 +492,29 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id),
+        //req.user._id will give us string but in database it is object so we have to convert it to object
+        //as we matching the the given field in database
+        _id: new mongoose.Types.ObjectId(req.user._id),//in database it is object --> at is convetered by moongose to object ans stored
+        //when ise finbyid mogonose automatiically convert it to object and serch it in database
+        //we use user._id mongoose will convert it to object to string and give us the string
+
+        //but here no role of monogose so we have to convert it to object
       },
     },
     {
-      $lookup: {
+      $lookup: {//user(watchhistory)-->video(owner)-->user
         from: "videos",
         localField: "watchHistory",
         foreignField: "_id",
         as: "watchHistory",
-        pipeline: [
+        pipeline: [//it is subpipeline
           {
             $lookup: {
               from: "users",
               localField: "owner",
               foreignField: "_id",
               as: "owner",
-              pipeline: [
+              pipeline: [//subpipeline inside subpipeline
                 {
                   $project: {
                     fullName: 1,
@@ -514,7 +524,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                 },
               ],
             },
-          },
+          },//staging inside sublpipline
           {
             $addFields: {
               owner: {
@@ -532,7 +542,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        user[0].watchHistory,
+        user[0].watchHistory,//as aggregate funciton of mongodb return array 
         "Watch history fetched successfully"
       )
     );
