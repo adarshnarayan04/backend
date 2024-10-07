@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     //can  not write useEffect(async () => { as it is hook
 
-    const controller = new AbortController();//so that we can cancel the request(as when we type a single letter it create an new rerquest)
+    const controller = new AbortController(); //so that we can cancel the request(as when we type a single letter it create an new rerquest)
 
     //use async await in axios so it do not go to next line until it get the response
 
@@ -23,17 +23,20 @@ function App() {
       try {
         setLoading(true);
         setError(false); //if error become true then it remain true forever --> so we set it false before every request
-        const response = await axios.get("/api/products?search=" + search,{
-          signal:controller.signal//cancel the old the request and send it to catch( so have to handle it differently in catch)
+        const response = await axios.get("/api/products?search=" + search, {
+          signal: controller.signal, //cancel the old the request and send it to catch( so have to handle it differently in catch)
+          //by thus we handle the race conditon
+
           //as it not an error it is due to cancel if the api request ( so setError should be not set by this )
         }); //as use app.get in backend so have to use get here also
         console.log(response);
         setProducts(response.data);
         setLoading(false);
       } catch (error) {
-        if(axios.isCancel(error)){//get called when the axios request is cancelled
-          console.log("Request Cancelled",error.message);
-          return;// so that setError is not called 
+        if (axios.isCancel(error)) {
+          //get called when the axios request is cancelled
+          console.log("Request Cancelled", error.message);
+          return; // so that setError is not called
           //as it not an error ,it is due to cancel if the api request
         }
         setError(true);
@@ -47,9 +50,9 @@ function App() {
     //then this code will run
 
     return () => {
-      controller.abort();//abort the request
-    }
-  }, [search]);//ADDED search in dependency array(so that it get new data when search changes)
+      controller.abort(); //abort the request
+    };
+  }, [search]); //ADDED search in dependency array(so that it get new data when search changes)
 
   //const [products,error,loading]= customReactQuery("/api/products");
 
