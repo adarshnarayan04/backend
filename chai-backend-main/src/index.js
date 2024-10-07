@@ -4,6 +4,7 @@ import dotenv from "dotenv"//if use import then have to write dotenv.config({pat
 //"dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js" also this is added in 'nodemon src/index.js'
 import connectDB from "./db/index.js";
 import {app} from './app.js'//write .js always else will give error
+//we have created app in app.js and exported it and imported it here(const app = express())
 dotenv.config({
     path: './.env'
 })
