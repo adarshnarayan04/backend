@@ -11,6 +11,8 @@ dotenv.config({
 
 
 //connectDB() is a async function so can use --> so calling it retuurn a promise (can use .then () and .catch())
+//procoes.env.PORT is used to get the port number from .env file but in production it will be provided by the hosting provider
+// so we write process.env.PORT  if that port in not available then production will provide use re write the process.env.PORT
 connectDB()
 .then(() => {
     app.listen(process.env.PORT || 8000, () => {
