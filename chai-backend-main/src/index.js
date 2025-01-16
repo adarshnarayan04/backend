@@ -23,7 +23,8 @@ connectDB()
     console.log("MONGO db connection failed !!! ", err);
 })
 
-0
+//can also write app.listen(process.env.PORT || 8000) only, it will work fine
+//by adding callback function we know when the server is started as it will print the message
 
 
 
