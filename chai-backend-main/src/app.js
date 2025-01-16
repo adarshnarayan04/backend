@@ -21,6 +21,8 @@ app.use(express.static("public"));
 //pulbic folder is used to store images pdf,and files that are used
 app.use(cookieParser());//it is middleware to parse the cookie
 
+//always res.json() when we create a api (even if response is empty --> res.json({}) we have to write this)
+
 //routes import
 import userRouter from "./routes/user.routes.js"; //as it was default export so we can give any name
 import healthcheckRouter from "./routes/healthcheck.routes.js";
