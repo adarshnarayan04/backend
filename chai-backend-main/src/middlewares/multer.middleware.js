@@ -5,6 +5,7 @@
 
 import multer from "multer"; //to install use npm i multer
 
+//this is code is in multer documentation(https://www.npmjs.com/package/multer) --> scroll down and see
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     //cb is callback  file option is given by multer( earlier it was not availabel)

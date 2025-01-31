@@ -13,7 +13,7 @@ import {
   getWatchHistory,
   updateAccountDetails,
 } from "../controllers/user.controller.js"; //importing all the functions from user.controller.js
-import { upload } from "../middlewares/multer.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";//it is multer middleware( we define the multer middleware in multer.middleware.js)
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router(); //creating the router
@@ -36,6 +36,18 @@ const router = Router(); //creating the router
 //parameter value is filled my the recieved data from the frontend/postman automatically by express js
 //then controller functoin do the work on the recieved data (like authroization,validation and setting the data in the database)
 
+//can see how to use multer in the documentation of multer(https://www.npmjs.com/package/multer) -->it shows how to use it as middleware and write uploads
+//in docs:
+//const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+// app.post('/cool-profile', cpUpload, function (req, res, next) {
+//   // req.files is an object (String -> Array) where fieldname is the key, and the value is array of files
+//   //
+//   // e.g.
+//   //  req.files['avatar'][0] -> File //to access the file
+//   //  req.files['gallery'] -> Array
+//   //
+//   // req.body will contain the text fields, if there were any
+// })
 router.route("/register").post(
   upload.fields([
     //uploads the recieved files from the frontend to local storage(as it is multer middleware) and adds it req object
