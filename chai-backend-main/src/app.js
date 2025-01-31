@@ -17,7 +17,7 @@ app.use(
 
 app.use(express.json({ limit: "16kb" }));//so that we can recieve json data(  ex: in post request req.body generally cointain json data  --> will give undefined if we dont use this)
 app.use(express.urlencoded({ extended: true, limit: "16kb" })); //so that we can recieve form data(  ex: in post request req.body generally cointain form data  --> will give undefined if we dont use this)
-app.use(express.static("public"));
+app.use(express.static("public"));// to use the public folder and access the files inside it which are sta
 //pulbic folder is used to store images pdf,and files that are used
 app.use(cookieParser());//it is middleware to parse the cookie
 
