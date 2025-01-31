@@ -78,6 +78,10 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 //https://jwt.io/   --> to visilaize the token of jwt
+// we can see all the payload of the jwt token, if we paste the jwt cookie value on the jwt.io website
+// But when we try to modify the cookie value(using developer tools), to another value (to hack into another account --> as create jwt token for that email or id by ourself )
+// then it will give error , we cannot decode it our side , as the private key is different(the new created cookie will have other key--->as we dont know the original key)
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {

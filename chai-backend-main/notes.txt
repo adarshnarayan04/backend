@@ -1,0 +1,4 @@
+Cookie (JWT)
+we can see all the payload of the jwt token, if we paste the jwt cookie value on the jwt.io website
+But when we try to modify the cookie value, to another value 
+then it will give error , we cannot decode it our side , as the private key is different(the new created cookie will have other key)
