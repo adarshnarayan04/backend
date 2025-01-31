@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-//always res.json() when we create a api (even if response is empty --> res.json({}) we have to write this)
+//always res.status().json() when we create a api (even if response is empty --> res.json({}) we have to write this)
 
 
 const generateAccessAndRefereshTokens = async (userId) => {

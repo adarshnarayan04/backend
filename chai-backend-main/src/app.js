@@ -16,12 +16,13 @@ app.use(
 //have to write this 4 line code(to recieve data form vaious thing(like forn ,json,image,url))
 
 app.use(express.json({ limit: "16kb" }));//so that we can recieve json data(  ex: in post request req.body generally cointain json data  --> will give undefined if we dont use this)
-app.use(express.urlencoded({ extended: true, limit: "16kb" })); //url encoder
+app.use(express.urlencoded({ extended: true, limit: "16kb" })); //so that we can recieve form data(  ex: in post request req.body generally cointain form data  --> will give undefined if we dont use this)
 app.use(express.static("public"));
 //pulbic folder is used to store images pdf,and files that are used
 app.use(cookieParser());//it is middleware to parse the cookie
 
 //always res.json() when we create a api (even if response is empty --> res.json({}) we have to write this)
+//or res.status().json() if we want to send status code also
 
 //routes import
 import userRouter from "./routes/user.routes.js"; //as it was default export so we can give any name
