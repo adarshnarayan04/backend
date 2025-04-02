@@ -32,6 +32,10 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {//written _ instea
         next()
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid access token")
+        //this error will be handled by the catch of aynsc handler
+
+        //When an error is re-thrown inside the catch block
+        //it will propagate out of that function. If the function is wrapped by asyncHandler, that re-thrown error ends up being caught by asyncHandler’s catch block (i.e. the .catch((err) => next(err)) part) and passed to Express's error-handling middleware.
     }
     
 })
