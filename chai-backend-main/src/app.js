@@ -9,7 +9,9 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
-    credentials: true,
+    credentials: true,//server can accept credentials (cookie,auth headers) during cors origin request
+    //that why also we use in frontend also credentials:true ( to send credentials , it is cors origin request)
+    //backend and frontend are running on different server ,so we have to make it true ( so will not cause any error)
   })
 );
 
