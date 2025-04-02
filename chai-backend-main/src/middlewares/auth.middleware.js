@@ -35,3 +35,13 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {//written _ instea
     }
     
 })
+//Even though the asyncHandler catches asynchronous errors overall, the try-catch inside verifyJWT is used to customize error handling.
+// For example, jwt.verify can throw synchronous errors, and the try-catch lets you catch those errors and wrap them into a custom ApiError with a specific status code/message before letting asyncHandler pass it to Express's middleware. 
+// This gives you finer control over the error responses.
+
+
+//If you remove the try-catch block:
+// Any synchronous error (like one thrown by jwt.verify) would bubble up and still be caught by asyncHandler.
+// However, you would lose the opportunity to wrap these errors in your custom ApiError with a specific status code and message (e.g., converting a generic JWT error into a 401 "Invalid access token" error).
+// Without try-catch, the raw error gets passed on to the next middleware, which might not provide the desired error format or status.
+//means we dont have control on the status code and error message , in case any error occur

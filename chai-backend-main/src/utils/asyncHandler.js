@@ -10,9 +10,29 @@ const asyncHandler = (requestHandler) => {
     }
 }
 //In summary, catch((err) => next(err)) ensures that any errors occurring in the asynchronous request handler are properly caught and passed to the Express error-handling middleware, allowing for centralized error handling in your application.
+//it uses the dafault express error handler
 
 export { asyncHandler }
 
+//handling the error by own instead of using default express error handler ( so that we can set some fields by own like sucess,status code ), if not express will generate the message and status code
+// const asyncHandler = (fn) => async (req, res, next) => {
+//     try {
+//         return await fn(req, res, next);
+//     } catch (error) {
+//         let statusCode = error.statusCode || 500;
+//         if (statusCode < 100 || statusCode >= 600) {
+//             // If the status code is not in the valid range, set it to 500
+//             statusCode = 500;
+//         }
+//         res.status(statusCode).json({
+//             statusCode,
+//             success: false,
+//             message: error.message
+//         });
+//     }
+// };
+
+// export { asyncHandler };
 
 //using async await
 // const asyncHandler = (requestHandler) => {
