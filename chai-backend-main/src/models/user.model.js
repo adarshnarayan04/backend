@@ -61,6 +61,7 @@ const userSchema = new Schema(
 //can not use arrow function here because we are using this keyword(in arrow function this keyword points to the parent scope)
 //but we wahnt to use this keyword of userSchema (so normal function is used)
 
+//as want to  access this, no not used arrow function
 userSchema.pre("save", async function (next) {
   //as whenever someone update the profile then password will be hashed again so we have to check if password is modified or not
   //value should be in string so use "password"
