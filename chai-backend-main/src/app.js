@@ -9,7 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
-    credentials: true,//server can accept credentials (cookie,auth headers) during cors origin request
+    credentials: true, //server can accept credentials (cookie,auth headers) during cors origin request
     //that why also we use in frontend also credentials:true ( to send credentials , it is cors origin request)
     //backend and frontend are running on different server ,so we have to make it true ( so will not cause any error)
   })
@@ -17,11 +17,11 @@ app.use(
 
 //have to write this 4 line code(to recieve data form vaious thing(like forn ,json,image,url))
 
-app.use(express.json({ limit: "16kb" }));//so that we can recieve json data(  ex: in post request req.body generally cointain json data  --> will give undefined if we dont use this)
+app.use(express.json({ limit: "16kb" })); //so that we can recieve json data(  ex: in post request req.body generally cointain json data  --> will give undefined if we dont use this)
 app.use(express.urlencoded({ extended: true, limit: "16kb" })); //so that we can recieve form data(  ex: in post request req.body generally cointain form data  --> will give undefined if we dont use this)
-app.use(express.static("public"));// to use the public folder and access the files inside it which are sta
+app.use(express.static("public")); // to use the public folder and access the files inside it which are sta
 //pulbic folder is used to store images pdf,and files that are used
-app.use(cookieParser());//it is middleware to parse the cookie
+app.use(cookieParser()); //it is middleware to parse the cookie
 
 //always res.json() when we create a api (even if response is empty --> res.json({}) we have to write this)
 //or res.status().json() if we want to send status code also

@@ -16,6 +16,8 @@ const storage = multer.diskStorage({
     //help us to give the name of file
 
     cb(null, file.originalname);
+    //       cb(null , `${Date.now()}-${file.originalname}`) --> now every file name wil be unique
+
   },
 });
 
