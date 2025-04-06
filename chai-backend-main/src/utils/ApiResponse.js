@@ -43,7 +43,13 @@ export { ApiResponse }
 
 //const res= await axios.post("/api/getuser")
 //all the data send by backend will be here(object,success,message), also statusCode
-//so to access data in fronted res.data.var_name
+//so to access data in fronted res.data.data ( as we are sending data in data field of ApiResponse class)
+
+// if send by req.status(200).json( user,message:"Success") --> then
+//to access user --> res.data , but we sending like req.status(200).json({user,message:"Success"})
+//so to access user --> res.data.user
+
+//to access message --> res.data.message
 //to access success --> res.data.success
 
 //but no need of add statusCode of axios already give it by res.staus, then why use res.data.statusCode
